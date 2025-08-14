@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hallskärm – enkel & stabil</title>
+  <title>Hallskärm</title>
 
   <style>
     :root {
@@ -16,7 +16,7 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
       background: #000 center/cover no-repeat;
-      min-height: 100vh;
+      transition: background-image 1s ease-in-out;
     }
     .overlay { background: var(--overlay); min-height: 100vh; }
     .container { max-width: var(--maxw); margin: 0 auto; padding: 16px; }
@@ -34,21 +34,20 @@
     #date  { font-size: clamp(14px, 2vw, 18px); text-align: center; text-transform: capitalize; }
     #weather { text-align: right; font-size: clamp(14px, 2vw, 18px); }
 
-    /* Kalender-ram */
+    /* Kalender-container med genomskinlig bakgrund */
     .calwrap {
       margin-top: 16px;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.75); /* 75% vit, så bakgrunden syns igenom */
     }
-    /* Iframe fyller bredden; höjden justeras för skärm */
     #gcal {
       width: 100%;
-      height: calc(100vh - 160px); /* ungefärlig höjd, justeras efter behov */
+      height: calc(100vh - 160px);
       border: 0;
       display: block;
-      background: #fff; /* Googles kalender har vit bakgrund */
+      background: transparent;
     }
   </style>
 </head>
@@ -62,8 +61,6 @@
       </div>
 
       <div class="calwrap">
-        <!-- Din offentliga kalender-URL (enkelt & stabilt). 
-             Lägg till sambons kalender genom att addera &src=HENNES_ID här nedan. -->
         <iframe
           id="gcal"
           src="https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm&src=arshia.ksabet%40gmail.com"
@@ -84,8 +81,7 @@
     }
     tick(); setInterval(tick, 1000);
 
-    // ===== VÄDER (OpenWeatherMap) =====
-    // Din nyckel (från tidigare i chatten):
+    // ===== VÄDER =====
     const WEATHER_KEY = "4bc8d59a2e088e65153e243b1c613159";
     const CITY = "Storvreta";
     function loadWeather() {
@@ -100,19 +96,15 @@
     }
     loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
 
-    // ===== BAKGRUND – utan CORS (ingen fetch) =====
+    // ===== BAKGRUND (Unsplash, utan CORS-problem) =====
     function setBg() {
-      // Ny slumpad naturbild varje minut
       const url = `https://source.unsplash.com/1920x1080/?nature,landscape&sig=${Math.random()}`;
       document.body.style.backgroundImage = `url(${url})`;
     }
     setBg(); setInterval(setBg, 60000);
 
-    // ===== LÄGG TILL SAMBONS KALENDER (valfritt)
-    // När du har hennes offentliga kalender-ID (ofta e-post eller ...@group.calendar.google.com):
-    // 1) Ersätt nedan VARS med hennes ID.
-    // 2) Kör updateIframeSrc() en gång, eller uppdatera src i koden och deploya.
-    const PARTNER_ID = "maya.yeranossian@gmail.com"; // t.ex. "maya.yeranossian@gmail.com" när redo
+    // ===== LÄGG TILL SAMBONS KALENDER =====
+    const PARTNER_ID = ""; // ex: "maya.yeranossian@gmail.com"
     function updateIframeSrc() {
       const base = "https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
       const mine = "src=arshia.ksabet%40gmail.com";
