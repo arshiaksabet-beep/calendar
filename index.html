@@ -3,28 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vår hallskärm</title>
+  <title>Hallskärm – enkel & stabil</title>
 
-  <!-- FullCalendar CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --overlay: rgba(0,0,0,0.45);
+      --text: #fff;
+      --maxw: 1200px;
+    }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: #000 center/cover no-repeat;
+      min-height: 100vh;
+    }
+    .overlay { background: var(--overlay); min-height: 100vh; }
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 16px; }
+    #topbar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 16px;
+      backdrop-filter: blur(2px);
+    }
+    #clock { font-size: clamp(28px, 4vw, 44px); font-weight: 700; }
+    #date  { font-size: clamp(14px, 2vw, 18px); text-align: center; text-transform: capitalize; }
+    #weather { text-align: right; font-size: clamp(14px, 2vw, 18px); }
+
+    /* Kalender-ram */
+    .calwrap {
+      margin-top: 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.08);
+    }
+    /* Iframe fyller bredden; höjden justeras för skärm */
+    #gcal {
+      width: 100%;
+      height: calc(100vh - 160px); /* ungefärlig höjd, justeras efter behov */
+      border: 0;
+      display: block;
+      background: #fff; /* Googles kalender har vit bakgrund */
+    }
+  </style>
 </head>
 <body>
-  <div id="top-bar">
-    <div id="clock"></div>
-    <div id="date"></div>
-    <div id="weather"></div>
+  <div class="overlay">
+    <div class="container">
+      <div id="topbar">
+        <div id="clock">--:--</div>
+        <div id="date">—</div>
+        <div id="weather">Väder laddas…</div>
+      </div>
+
+      <div class="calwrap">
+        <!-- Din offentliga kalender-URL (enkelt & stabilt). 
+             Lägg till sambons kalender genom att addera &src=HENNES_ID här nedan. -->
+        <iframe
+          id="gcal"
+          src="https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm&src=arshia.ksabet%40gmail.com"
+          scrolling="no">
+        </iframe>
+      </div>
+    </div>
   </div>
 
-  <div id="calendar"></div>
+  <script>
+    // ===== KLOCKA & DATUM =====
+    function tick() {
+      const now = new Date();
+      document.getElementById('clock').textContent =
+        now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('date').textContent =
+        now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    tick(); setInterval(tick, 1000);
 
-  <!-- FullCalendar Core -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
-  <!-- Svenska språk -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
-  <!-- Google Calendar Plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@5.11.5/main.min.js"></script>
+    // ===== VÄDER (OpenWeatherMap) =====
+    // Din nyckel (från tidigare i chatten):
+    const WEATHER_KEY = "4bc8d59a2e088e65153e243b1c613159";
+    const CITY = "Storvreta";
+    function loadWeather() {
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(CITY)}&units=metric&appid=${WEATHER_KEY}&lang=sv`)
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(d => {
+          const t = Math.round(d.main?.temp ?? 0);
+          const desc = (d.weather?.[0]?.description || '').replace(/^./, c => c.toUpperCase());
+          document.getElementById('weather').textContent = `${t}°C, ${desc}`;
+        })
+        .catch(() => { document.getElementById('weather').textContent = "Väder ej tillgängligt"; });
+    }
+    loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
 
-  <script src="script.js"></script>
+    // ===== BAKGRUND – utan CORS (ingen fetch) =====
+    function setBg() {
+      // Ny slumpad naturbild varje minut
+      const url = `https://source.unsplash.com/1920x1080/?nature,landscape&sig=${Math.random()}`;
+      document.body.style.backgroundImage = `url(${url})`;
+    }
+    setBg(); setInterval(setBg, 60000);
+
+    // ===== LÄGG TILL SAMBONS KALENDER (valfritt)
+    // När du har hennes offentliga kalender-ID (ofta e-post eller ...@group.calendar.google.com):
+    // 1) Ersätt nedan VARS med hennes ID.
+    // 2) Kör updateIframeSrc() en gång, eller uppdatera src i koden och deploya.
+    const PARTNER_ID = "maya.yeranossian@gmail.com"; // t.ex. "maya.yeranossian@gmail.com" när redo
+    function updateIframeSrc() {
+      const base = "https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
+      const mine = "src=arshia.ksabet%40gmail.com";
+      const extra = PARTNER_ID ? `&src=${encodeURIComponent(PARTNER_ID)}` : "";
+      document.getElementById('gcal').src = `${base}&${mine}${extra}`;
+    }
+    updateIframeSrc();
+  </script>
 </body>
 </html>
