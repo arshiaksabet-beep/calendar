@@ -1,15 +1,30 @@
-// ===== BAKGRUND (slumpade naturbilder från Unsplash) =====
-function updateBackground() {
-  fetch("https://source.unsplash.com/random/1920x1080/?nature,landscape")
-    .then((response) => {
-      document.body.style.backgroundImage = `url(${response.url})`;
-    })
-    .catch(() => {
-      // fallback-bild om Unsplash inte svarar
-      document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')";
-    });
-}
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vår hallskärm</title>
 
-// Kör direkt och sedan varje minut
-updateBackground();
-setInterval(updateBackground, 60000);
+  <!-- FullCalendar CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="top-bar">
+    <div id="clock"></div>
+    <div id="date"></div>
+    <div id="weather"></div>
+  </div>
+
+  <div id="calendar"></div>
+
+  <!-- FullCalendar Core -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+  <!-- Svenska språk -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+  <!-- Google Calendar Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@5.11.5/main.min.js"></script>
+
+  <script src="script.js"></script>
+</body>
+</html>
