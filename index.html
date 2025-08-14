@@ -1,0 +1,15 @@
+// ===== BAKGRUND (slumpade naturbilder från Unsplash) =====
+function updateBackground() {
+  fetch("https://source.unsplash.com/random/1920x1080/?nature,landscape")
+    .then((response) => {
+      document.body.style.backgroundImage = `url(${response.url})`;
+    })
+    .catch(() => {
+      // fallback-bild om Unsplash inte svarar
+      document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')";
+    });
+}
+
+// Kör direkt och sedan varje minut
+updateBackground();
+setInterval(updateBackground, 60000);
