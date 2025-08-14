@@ -16,27 +16,41 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ===== VÄDER =====
-const weatherKey = "DIN_OPENWEATHER_API_KEY"; // <-- Byt till din OpenWeather API-nyckel
-const city = "Uppsala";
+const weatherKey = "4bc8d59a2e088e65153e243b1c613159"; // <-- Byt till din OpenWeather API-nyckel
+const city = "Storvreta";
+
+console.log("🔍 Hämtar väder för:", city);
 
 fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${weatherKey}&lang=sv`)
-  .then(res => res.json())
-  .then(data => {
-    const temp = Math.round(data.main.temp);
-    const desc = data.weather[0].description;
-    document.getElementById("weather").textContent = `${temp}°C, ${desc}`;
+  .then(res => {
+    console.log("🌐 OpenWeather API status:", res.status);
+    return res.json();
   })
-  .catch(() => {
+  .then(data => {
+    console.log("📦 OpenWeather data:", data);
+    if (data && data.main && data.weather) {
+      const temp = Math.round(data.main.temp);
+      const desc = data.weather[0].description;
+      document.getElementById("weather").textContent = `${temp}°C, ${desc}`;
+    } else {
+      document.getElementById("weather").textContent = "Väder ej tillgängligt";
+    }
+  })
+  .catch(err => {
+    console.error("❌ Fel vid hämtning av väder:", err);
     document.getElementById("weather").textContent = "Väder ej tillgängligt";
   });
 
 // ===== BAKGRUND (slumpade naturbilder från Unsplash) =====
 function updateBackground() {
+  console.log("🎨 Hämtar ny bakgrundsbild från Unsplash...");
   fetch("https://source.unsplash.com/random/1920x1080/?nature,landscape")
     .then((response) => {
+      console.log("🖼️ Ny bakgrundsbild-URL:", response.url);
       document.body.style.backgroundImage = `url(${response.url})`;
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error("❌ Fel vid hämtning av bakgrundsbild:", err);
       document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')";
     });
 }
@@ -47,10 +61,13 @@ setInterval(updateBackground, 60000);
 document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
 
+  console.log("📅 Initierar kalender...");
+  console.log("🔑 Google API-nyckel:", "AIzaSyBjISq4iARfP_ef3e2Hnl8lCK9Qzq2W1Ls");
+  
   var calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'sv',
     initialView: 'dayGridMonth',
-    googleCalendarApiKey: 'DIN_GOOGLE_API_KEY', // <-- Byt till din Google API-nyckel
+    googleCalendarApiKey: 'AIzaSyBjISq4iARfP_ef3e2Hnl8lCK9Qzq2W1Ls', // <-- Byt till din Google API-nyckel
     eventSources: [
       {
         googleCalendarId: 'arshia.ksabet@gmail.com',
@@ -60,8 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
         googleCalendarId: 'maya.yeranossian@gmail.com',
         className: 'partners'
       }
-    ]
+    ],
+    events: function(fetchInfo, successCallback, failureCallback) {
+      console.log("📡 Hämtar events mellan:", fetchInfo.startStr, "och", fetchInfo.endStr);
+    }
   });
 
   calendar.render();
+  console.log("✅ Kalendern är renderad");
 });
