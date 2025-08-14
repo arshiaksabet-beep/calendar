@@ -17,7 +17,7 @@ updateClock();
 
 // ===== VÄDER =====
 const weatherKey = "DIN_OPENWEATHER_API_KEY"; // <-- Byt till din OpenWeather API-nyckel
-const city = "Storvreta";
+const city = "Uppsala";
 
 fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${weatherKey}&lang=sv`)
   .then(res => res.json())
