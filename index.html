@@ -71,7 +71,7 @@
   </div>
 
   <script>
-
+    // ===== KLOCKA & DATUM =====
     function tick() {
       const now = new Date();
       document.getElementById('clock').textContent =
@@ -81,7 +81,7 @@
     }
     tick(); setInterval(tick, 1000);
 
-
+    // ===== VÄDER =====
     const WEATHER_KEY = "4bc8d59a2e088e65153e243b1c613159";
     const CITY = "Storvreta";
     function loadWeather() {
@@ -96,9 +96,15 @@
     }
     loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
 
-<script>
+    // ===== BAKGRUND (Unsplash, utan CORS-problem) =====
+    function setBg() {
+      const url = `https://source.unsplash.com/1920x1080/?nature,landscape&sig=${Math.random()}`;
+      document.body.style.backgroundImage = `url(${url})`;
+    }
+    setBg(); setInterval(setBg, 60000);
 
-    const PARTNER_ID = "maya.yeranossian@gmail.com"; // ex: "maya.yeranossian@gmail.com"
+    // ===== LÄGG TILL SAMBONS KALENDER =====
+    const PARTNER_ID = ""; // ex: "maya.yeranossian@gmail.com"
     function updateIframeSrc() {
       const base = "https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
       const mine = "src=arshia.ksabet%40gmail.com";
