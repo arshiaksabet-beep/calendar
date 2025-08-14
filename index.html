@@ -71,7 +71,7 @@
   </div>
 
   <script>
-    // ===== KLOCKA & DATUM =====
+
     function tick() {
       const now = new Date();
       document.getElementById('clock').textContent =
@@ -81,7 +81,7 @@
     }
     tick(); setInterval(tick, 1000);
 
-    // ===== VÄDER =====
+
     const WEATHER_KEY = "4bc8d59a2e088e65153e243b1c613159";
     const CITY = "Storvreta";
     function loadWeather() {
@@ -98,7 +98,6 @@
 
 <script>
 
-    // ===== LÄGG TILL SAMBONS KALENDER =====
     const PARTNER_ID = "maya.yeranossian@gmail.com"; // ex: "maya.yeranossian@gmail.com"
     function updateIframeSrc() {
       const base = "https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
