@@ -43,20 +43,11 @@ fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&ap
 
 // ===== BAKGRUND (slumpade naturbilder från Unsplash) =====
 function updateBackground() {
-  console.log("🎨 Hämtar ny bakgrundsbild från Unsplash...");
-  fetch("https://source.unsplash.com/random/1920x1080/?nature,landscape")
-    .then((response) => {
-      console.log("🖼️ Ny bakgrundsbild-URL:", response.url);
-      document.body.style.backgroundImage = `url(${response.url})`;
-    })
-    .catch((err) => {
-      console.error("❌ Fel vid hämtning av bakgrundsbild:", err);
-      document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')";
-    });
+  const imgUrl = `https://source.unsplash.com/1920x1080/?nature,landscape&sig=${Math.random()}`;
+  document.body.style.backgroundImage = `url(${imgUrl})`;
 }
 updateBackground();
 setInterval(updateBackground, 60000);
-
 // ===== KALENDER =====
 document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
