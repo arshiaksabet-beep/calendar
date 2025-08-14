@@ -3,51 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hallskärm</title>
-
+  <title>Hallskärm – stabil</title>
   <style>
-    :root {
-      --overlay: rgba(0,0,0,0.45);
-      --text: #fff;
-      --maxw: 1200px;
-    }
     html, body { height: 100%; margin: 0; }
-    body {
+    body{
+      /* STATISK, pålitlig bakgrund (byt till valfri direktbild-URL när du vill) */
+      background: #000 url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80")
+                  center / cover no-repeat fixed;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      background: #000 center/cover no-repeat;
-      transition: background-image 1s ease-in-out;
+      color: #fff;
     }
-    .overlay { background: var(--overlay); min-height: 100vh; }
-    .container { max-width: var(--maxw); margin: 0 auto; padding: 16px; }
-    #topbar {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: rgba(0,0,0,0.55);
-      border-radius: 16px;
-      backdrop-filter: blur(2px);
+    .overlay{ background: rgba(0,0,0,0.45); min-height:100vh; }
+    .container{ max-width: 1200px; margin:0 auto; padding:16px; }
+    #topbar{
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px;
+      padding:10px 14px; background: rgba(0,0,0,0.55); border-radius:16px;
     }
-    #clock { font-size: clamp(28px, 4vw, 44px); font-weight: 700; }
-    #date  { font-size: clamp(14px, 2vw, 18px); text-align: center; text-transform: capitalize; }
-    #weather { text-align: right; font-size: clamp(14px, 2vw, 18px); }
+    #clock{ font-size: 36px; font-weight: 700; }
+    #date{ text-align:center; text-transform:capitalize; }
+    #spacer{ text-align:right; opacity:.8; }
 
-    /* Kalender-container med genomskinlig bakgrund */
-    .calwrap {
-      margin-top: 16px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      background: rgba(255,255,255,0.75); /* 75% vit, så bakgrunden syns igenom */
+    .calwrap{
+      margin-top:16px; border-radius:16px; overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      background: rgba(255,255,255,0.85); /* genomskinlig så bg skymtar */
     }
-    #gcal {
-      width: 100%;
-      height: calc(100vh - 160px);
-      border: 0;
-      display: block;
-      background: transparent;
+    #gcal{
+      width:100%;
+      height: calc(100vh - 160px); /* fyll skärmen under topbar */
+      border:0; display:block; background:transparent;
+    }
+
+    @media (max-width: 820px){ /* iPad / mindre skärmar */
+      #clock{ font-size: 28px; }
     }
   </style>
 </head>
@@ -57,59 +45,36 @@
       <div id="topbar">
         <div id="clock">--:--</div>
         <div id="date">—</div>
-        <div id="weather">Väder laddas…</div>
+        <div id="spacer"></div>
       </div>
 
       <div class="calwrap">
-        <iframe
-          id="gcal"
+        <!-- LÄGG TILL sambons kalender genom att fylla i PARTNER_ID längre ned -->
+        <iframe id="gcal"
           src="https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm&src=arshia.ksabet%40gmail.com"
-          scrolling="no">
-        </iframe>
+          scrolling="no"></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    // ===== KLOCKA & DATUM =====
-    function tick() {
-      const now = new Date();
+    // Klocka + datum (enkel, kompatibel)
+    function tick(){
+      var now = new Date();
       document.getElementById('clock').textContent =
-        now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+        now.toLocaleTimeString('sv-SE', {hour:'2-digit', minute:'2-digit'});
       document.getElementById('date').textContent =
-        now.toLocaleDateString('sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        now.toLocaleDateString('sv-SE', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
     }
     tick(); setInterval(tick, 1000);
 
-    // ===== VÄDER =====
-    const WEATHER_KEY = "4bc8d59a2e088e65153e243b1c613159";
-    const CITY = "Storvreta";
-    function loadWeather() {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(CITY)}&units=metric&appid=${WEATHER_KEY}&lang=sv`)
-        .then(r => r.ok ? r.json() : Promise.reject(r.status))
-        .then(d => {
-          const t = Math.round(d.main?.temp ?? 0);
-          const desc = (d.weather?.[0]?.description || '').replace(/^./, c => c.toUpperCase());
-          document.getElementById('weather').textContent = `${t}°C, ${desc}`;
-        })
-        .catch(() => { document.getElementById('weather').textContent = "Väder ej tillgängligt"; });
-    }
-    loadWeather(); setInterval(loadWeather, 15 * 60 * 1000);
-
-    // ===== BAKGRUND (Unsplash, utan CORS-problem) =====
-    function setBg() {
-      const url = `https://source.unsplash.com/1920x1080/?nature,landscape&sig=${Math.random()}`;
-      document.body.style.backgroundImage = `url(${url})`;
-    }
-    setBg(); setInterval(setBg, 60000);
-
-    // ===== LÄGG TILL SAMBONS KALENDER =====
-    const PARTNER_ID = ""; // ex: "maya.yeranossian@gmail.com"
-    function updateIframeSrc() {
-      const base = "https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
-      const mine = "src=arshia.ksabet%40gmail.com";
-      const extra = PARTNER_ID ? `&src=${encodeURIComponent(PARTNER_ID)}` : "";
-      document.getElementById('gcal').src = `${base}&${mine}${extra}`;
+    // Lägg till sambons kalender här (valfritt)
+    var PARTNER_ID = "maya.yeranossian@gmail.com"; // t.ex. "maya.yeranossian@gmail.com" (måste vara offentlig)
+    function updateIframeSrc(){
+      var base="https://calendar.google.com/calendar/embed?mode=MONTH&ctz=Europe/Stockholm";
+      var mine="src=arshia.ksabet%40gmail.com";
+      var extra = PARTNER_ID ? "&src="+encodeURIComponent(PARTNER_ID) : "";
+      document.getElementById('gcal').src = base + "&" + mine + extra;
     }
     updateIframeSrc();
   </script>
